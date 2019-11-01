@@ -59,15 +59,42 @@ namespace WebApplication2.Controllers
             });
         }
 
-        /*[HttpPut("api/students/{id}")]
-        public IActionResult EditStudent(StudenteDetailsDto student)
+        [HttpPut("api/students/{id}")]
+        public IActionResult Put(StudenteDetailsDto student, int id)
         {
-            var existingStudent = _student.Where(s => s.Id == student.Id).FirstOrDefault<Student>();
+            var existingStudent = _student.FirstOrDefault(x => x.Id == id);
 
             if (existingStudent != null)
             {
                 existingStudent.FirstName = student.FirstName;
                 existingStudent.LastName = student.LastName;
+                existingStudent.DateOfBirth = student.DateOfBirth;
+                existingStudent.Address = student.Address;
+                existingStudent.PhoneNumber = student.PhoneNumber;
+                existingStudent.Course = student.Course;
+                existingStudent.EnrolmentDate = student.EnrolmentDate;
+                return Ok(_student);
+
+
+
+            }
+            else
+            {
+                return NotFound();
+
+            }
+        }
+        
+        [HttpDelete("api/students/{id}")]
+        public IActionResult Delete(StudenteDetailsDto student, int id)
+        {
+            var existingStudent = _student.FirstOrDefault(x => x.Id == id);
+
+            if (existingStudent != null)
+            {
+                existingStudent.RemoveAt(id);
+                return Ok(_student);
+
 
 
             }
@@ -77,6 +104,6 @@ namespace WebApplication2.Controllers
 
             }
 
-        }*/
+        }
     }
 }
