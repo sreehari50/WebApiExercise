@@ -86,14 +86,78 @@ namespace WebApplication2.Controllers
         }
         
         [HttpDelete("api/students/{id}")]
-        public IActionResult Delete(StudenteDetailsDto student, int id)
+        public IActionResult Delete(int id)
         {
-            var existingStudent = _student.FirstOrDefault(x => x.Id == id);
-
-            if (existingStudent != null)
+            foreach (var entity in _student)
             {
-                existingStudent.RemoveAt(id);
-                return Ok(_student);
+                if (entity.Id == id)
+                {
+                    _student.Remove(entity);
+                    return Ok();
+                }
+            }
+            return NotFound();
+
+
+        }
+
+        private static List<Courses> _course = new List<Courses>();
+
+        [HttpGet("api/courses")]
+        public IActionResult GetCourseDetails()
+        {
+            return Ok(_course);
+        }
+        [HttpPost("api/courses")]
+        public IActionResult CreateCourse(Courses courses)
+        {
+            var lastCourse = _course.OrderByDescending(x => x.Id).LastOrDefault();
+
+            int id = lastCourse == null ? 1 : lastCourse.Id + 1;
+
+            var courseToBeAdded = new Courses
+            {
+                Id = id,
+                CourseName = courses.CourseName,
+                Sub1 = courses.Sub1,
+                Sub2 = courses.Sub2,
+                Sub3 = courses.Sub3
+            };
+
+            _course.Add(courseToBeAdded);
+            return Ok(courseToBeAdded.Id);
+        }
+        [HttpGet("api/courses/{id}")]
+        public IActionResult GetCourseId(int id)
+        {
+            var course = _course.SingleOrDefault(x => x.Id == id);
+
+            if (course == null)
+                return NotFound();
+
+            return Ok(new Courses
+            {
+                Id = id,
+                CourseName = course.CourseName,
+                Sub1 = course.Sub1,
+                Sub2 = course.Sub2,
+                Sub3 = course.Sub3
+            });
+        }
+
+        [HttpPut("api/courses/{id}")]
+        public IActionResult PutCourse(Courses course, int id)
+        {
+            var existingCourse = _course.FirstOrDefault(x => x.Id == id);
+
+            if (existingCourse != null)
+            {
+                existingCourse.CourseName = course.CourseName;
+                existingCourse.Sub1 = course.Sub1;
+                existingCourse.Sub2 = course.Sub2;
+                existingCourse.Sub3 = course.Sub3;
+                
+                return Ok(_course);
 
 
 
@@ -103,7 +167,37 @@ namespace WebApplication2.Controllers
                 return NotFound();
 
             }
+        }
+
+        [HttpGet("api/course/details")]
+        public IActionResult GetCourseListDetails()
+        {
+            var courselist = from S in _student
+                             join C in _course on S.Course equals C.CourseName into CS
+                             from a in CS
+                             group a by a.CourseName into g
+                             select new { CourseName = g.Key, Student_Count = g.Count() };
+
+            return Ok(courselist);
+        }
+
+        [HttpDelete("api/courses/{id}")]
+        public IActionResult DeleteCourse(int id)
+        {
+            foreach (var entity in _course)
+            {
+                if (entity.Id == id)
+                {
+                    _course.Remove(entity);
+                    return Ok();
+                }
+            }
+            return NotFound();
+
 
         }
+
+
+
     }
 }
