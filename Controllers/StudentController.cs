@@ -12,6 +12,17 @@ namespace WebApplication2.Controllers
 
         private static List<Courses> _course = new List<Courses>();
 
+
+                /*{
+          "firstName": "aaa",
+          "lastName": "adwdw",
+          "dateOfBirth": "3000-01-01T00:00:00",
+          "address": "aa",
+          "phoneNumber": 0,
+          "course": "A",
+          "enrolmentDate": "0001-01-01T00:00:00"
+        }*/
+
         [HttpPost("api/students")]
         public IActionResult CreateStudent(StudentCreationDto student)
         {
@@ -109,7 +120,7 @@ namespace WebApplication2.Controllers
 
             }
         }
-        
+
         [HttpDelete("api/students/{id}")]
         public IActionResult Delete(int id)
         {
@@ -126,14 +137,23 @@ namespace WebApplication2.Controllers
 
         }
 
-        
+
 
         [HttpGet("api/courses")]
         public IActionResult GetCourseDetails()
         {
             return Ok(_course);
         }
-        [HttpPost("api/courses")]
+
+
+
+                    /*{
+              "courseName": "A",
+              "sub1": "a",
+              "sub2": "b",
+              "sub3": "c"
+            }*/
+    [HttpPost("api/courses")]
         public IActionResult CreateCourse(Courses courses)
         {
             var lastCourse = _course.OrderByDescending(x => x.Id).LastOrDefault();
@@ -181,7 +201,7 @@ namespace WebApplication2.Controllers
                 existingCourse.Sub1 = course.Sub1;
                 existingCourse.Sub2 = course.Sub2;
                 existingCourse.Sub3 = course.Sub3;
-                
+
                 return Ok(_course);
 
             }
@@ -195,11 +215,11 @@ namespace WebApplication2.Controllers
         [HttpGet("api/courses/details")]
         public IActionResult GetCourseListDetails()
         {
-            var courselist = from C in _course 
-                             join S in _student on   C.CourseName equals S.Course into CS
+            var courselist = from C in _course
+                             join S in _student on C.CourseName equals S.Course into CS
                              from a in CS.DefaultIfEmpty()
                              group a by C.CourseName into g
-                             select new { CourseName = g.Key, Student_Count = g.Count(S => S!= null) };
+                             select new { CourseName = g.Key, Student_Count = g.Count(S => S != null) };
 
             return Ok(courselist);
         }
