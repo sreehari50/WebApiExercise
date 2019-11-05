@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,12 +10,36 @@ namespace WebApplication2.Controllers
     {
         private static List<Student> _student = new List<Student>();
 
+        private static List<Courses> _course = new List<Courses>();
+
         [HttpPost("api/students")]
         public IActionResult CreateStudent(StudentCreationDto student)
         {
             var lastStudent = _student.OrderByDescending(x => x.Id).LastOrDefault();
 
             int id = lastStudent == null ? 1 : lastStudent.Id + 1;
+            bool flag = false;
+
+            foreach (var course in _course)
+            {
+                if (student.Course == course.CourseName)
+                {
+                    flag = true;
+                }
+            }
+            if (flag == false)
+            {
+                return Conflict("Course is Not is list");
+            }
+            if (Convert.ToDateTime(student.DateOfBirth) > DateTime.Now)
+            {
+                return Conflict("enter a valid date");
+            }
+            if (Convert.ToDateTime(student.EnrolmentDate) > DateTime.Now)
+            {
+                return Conflict("enter a valid date");
+            }
+
 
             var studentToBeAdded = new Student
             {
@@ -101,7 +126,7 @@ namespace WebApplication2.Controllers
 
         }
 
-        private static List<Courses> _course = new List<Courses>();
+        
 
         [HttpGet("api/courses")]
         public IActionResult GetCourseDetails()
@@ -159,8 +184,6 @@ namespace WebApplication2.Controllers
                 
                 return Ok(_course);
 
-
-
             }
             else
             {
@@ -169,14 +192,14 @@ namespace WebApplication2.Controllers
             }
         }
 
-        [HttpGet("api/course/details")]
+        [HttpGet("api/courses/details")]
         public IActionResult GetCourseListDetails()
         {
-            var courselist = from S in _student
-                             join C in _course on S.Course equals C.CourseName into CS
-                             from a in CS
-                             group a by a.CourseName into g
-                             select new { CourseName = g.Key, Student_Count = g.Count() };
+            var courselist = from C in _course 
+                             join S in _student on   C.CourseName equals S.Course into CS
+                             from a in CS.DefaultIfEmpty()
+                             group a by C.CourseName into g
+                             select new { CourseName = g.Key, Student_Count = g.Count(S => S!= null) };
 
             return Ok(courselist);
         }
