@@ -12,7 +12,7 @@ namespace WebApplication2
         public string FirstName { get; set; }
 
         
-        [StringLength(25, ErrorMessage = "First name cannot be longer than 25 characters.")]
+        [StringLength(25, ErrorMessage = "Second name cannot be longer than 25 characters.")]
         public string LastName { get; set; }
 
         [DataType(DataType.Date)]
@@ -20,10 +20,10 @@ namespace WebApplication2
         public DateTime DateOfBirth { get; set; }
 
 
-        [StringLength(2000, ErrorMessage = "First name cannot be longer than 2000 characters.")]
+        [StringLength(2000, ErrorMessage = "Address cannot be longer than 2000 characters.")]
         public string Address { get; set; }
 
-        [StringLength(10, ErrorMessage = "First name cannot be longer than 10 characters.")]
+        [StringLength(10, ErrorMessage = "Phone number cannot be longer than 10 characters.")]
         public long PhoneNumber { get; set; }
 
         public string Course { get; set; }
